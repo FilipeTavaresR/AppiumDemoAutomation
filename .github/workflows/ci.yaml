@@ -29,9 +29,9 @@ jobs:
         uses: android-actions/setup-android@v2
 
       # Passo 4: Instala o Appium globalmente
-      - name: Install Appium
+      - name: Install Appium 2.16.1
         run: |
-          npm install -g appium
+          npm install -g appium@2.16.1
           appium -v
 
       # Passo 5: Instala as dependências do Maven
