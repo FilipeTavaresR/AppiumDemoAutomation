@@ -19,6 +19,7 @@ public abstract class BaseTest {
     private static final String APP_PACKAGE = "com.saucelabs.mydemoapp.android";
     private static final String APP_ACTIVITY = "com.saucelabs.mydemoapp.android.view.activities.SplashActivity";
     private static final int COMMAND_TIMEOUT = 300;
+    private static final Duration TIMEOUT = Duration.ofSeconds(60);
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -33,6 +34,7 @@ public abstract class BaseTest {
                     .setAppPackage(APP_PACKAGE)
                     .setAppActivity(APP_ACTIVITY)
                     .setNoReset(true)
+                    .setUiautomator2ServerLaunchTimeout(TIMEOUT)
                     .setNewCommandTimeout(Duration.ofSeconds(COMMAND_TIMEOUT));
 
             driver = new AndroidDriver(new URL("http://127.0.0.1:4723"), options);
