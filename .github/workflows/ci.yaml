@@ -33,19 +33,25 @@ jobs:
         run: |
           npm install -g appium@2.16.1
           appium -v
+
+      # Passo 5: Instala o driver UiAutomator2
+      - name: Install UiAutomator2 Driver
+        run: |
+          appium driver install uiautomator2
+          appium driver list --installed
           
-      # Passo 5: Inicia o Appium Server
+      # Passo 6: Inicia o Appium Server
       - name: Start Appium Server
         run: |
           appium --log-level debug &
           APPIUM_PID=$!
           echo "Appium Server started with PID: $APPIUM_PID"
           
-      # Passo 6: Instala as dependências do Maven
+      # Passo 7: Instala as dependências do Maven
       - name: Install Maven dependencies
         run: mvn clean install -DskipTests
 
-      # Passo 7: Inicia o emulador Android
+      # Passo 8: Inicia o emulador Android
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -56,11 +62,11 @@ jobs:
             adb devices
             echo "Emulador iniciado."
 
-      # Passo 8: Executa os testes Appium
+      # Passo 9: Executa os testes Appium
       - name: Run Appium Tests
         run: mvn test
 
-      # Passo 9: Publica os resultados dos testes (opcional)
+      # Passo 10: Publica os resultados dos testes (opcional)
       - name: Publish Test Results
         if: always()  # Executa mesmo se os testes falharem
         uses: actions/upload-artifact@v4
