@@ -1,0 +1,62 @@
+name: CI Appium Tests
+
+on:
+  push:
+    branches:
+      - main  # Executa o pipeline quando houver push na branch main
+  pull_request:
+    branches:
+      - main  # Executa o pipeline quando houver um pull request para a branch main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Usa um runner com Ubuntu
+
+    steps:
+      # Passo 1: Faz checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Passo 2: Configura o Java
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Passo 3: Configura o Android SDK
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+
+      # Passo 4: Instala o Appium globalmente
+      - name: Install Appium
+        run: |
+          npm install -g appium
+          appium -v
+
+      # Passo 5: Instala as dependências do Maven
+      - name: Install Maven dependencies
+        run: mvn clean install -DskipTests
+
+      # Passo 6: Inicia o emulador Android
+      - name: Start Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30  # API Level do Android
+          arch: x86_64   # Arquitetura do emulador
+          profile: Nexus 6  # Perfil do dispositivo
+          script: |
+            adb devices
+            echo "Emulador iniciado."
+
+      # Passo 7: Executa os testes Appium
+      - name: Run Appium Tests
+        run: mvn test
+
+      # Passo 8: Publica os resultados dos testes (opcional)
+      - name: Publish Test Results
+        if: always()  # Executa mesmo se os testes falharem
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: target/surefire-reports
