@@ -1,4 +1,4 @@
-name: Run Android Emulator Tests
+name: Run Android Emulator Tests 
 
 on:
   push:
