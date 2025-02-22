@@ -55,7 +55,7 @@ jobs:
         with:
           api-level: 30  # Versão do Android
           arch: x86_64  # Arquitetura do emulador
-          profile: Pixel_8_Pro_API_30  # Perfil do dispositivo
+          profile: pixel_xl  # Perfil do dispositivo padrão
           script: |
             adb wait-for-device
             echo "Emulador iniciado."
