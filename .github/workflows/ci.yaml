@@ -37,38 +37,42 @@ jobs:
           api-level: 30  # Versão do Android
           arch: x86_64  # Arquitetura do emulador
           profile: pixel_xl  # Perfil do dispositivo padrão
-          script: |
-            adb wait-for-device
-            echo "Esperando o emulador inicializar..."
-            sleep 30  # Espera 30 segundos para o emulador inicializar
-            echo "Emulador iniciado."
 
-      # Passo 5: Verifica se o emulador está funcionando
+      # Passo 5: Aguarda o emulador inicializar completamente
+      - name: Wait for Emulator
+        run: |
+          echo "Aguardando o emulador inicializar..."
+          until adb shell getprop sys.boot_completed | grep -m 1 '1'; do
+            sleep 5
+          done
+          echo "Emulador iniciado."
+
+      # Passo 6: Verifica se o emulador está funcionando
       - name: Check Emulator Status
         run: |
           adb devices
           adb shell getprop sys.boot_completed
 
-      # Passo 6: Instala o Appium 2.16.1
+      # Passo 7: Instala o Appium 2.16.1
       - name: Install Appium 2.16.1
         run: |
           npm install -g appium@2.16.1
           appium -v
 
-      # Passo 7: Instala o driver UiAutomator2
+      # Passo 8: Instala o driver UiAutomator2
       - name: Install UiAutomator2 Driver
         run: |
           appium driver install uiautomator2
           appium driver list --installed
 
-      # Passo 8: Inicia o Appium Server
+      # Passo 9: Inicia o Appium Server
       - name: Start Appium Server
         run: |
-          appium --log-level debug &
-          APPIUM_PID=$!
-          echo "Appium Server started with PID: $APPIUM_PID"
+          appium --log-level debug > appium.log 2>&1 &
+          echo $! > appium_pid.txt
+          echo "Appium Server iniciado."
 
-      # Passo 9: Verifica se o Appium está conectado ao emulador
+      # Passo 10: Verifica se o Appium está conectado ao emulador
       - name: Check Appium Connection
         run: |
           echo "Verificando conexão do Appium com o emulador..."
@@ -80,16 +84,16 @@ jobs:
             exit 1
           fi
 
-      # Passo 10: Instala o APK no emulador
+      # Passo 11: Instala o APK no emulador
       - name: Install APK
         run: |
           adb install src/test/resources/app-debug.apk
 
-      # Passo 11: Executa os testes Appium
+      # Passo 12: Executa os testes Appium
       - name: Run Appium Tests
         run: mvn test
 
-      # Passo 12: Publica os resultados dos testes (opcional)
+      # Passo 13: Publica os resultados dos testes
       - name: Publish Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -97,8 +101,26 @@ jobs:
           name: test-results
           path: target/surefire-reports
 
-      # Passo 13: Encerra o Appium Server
+      # Passo 14: Salva logs do emulador e Appium (para debug)
+      - name: Save Emulator & Appium Logs
+        if: always()
+        run: |
+          adb logcat -d > emulator-log.txt
+          cp appium.log appium-log.txt || true
+
+      - name: Upload Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: |
+            emulator-log.txt
+            appium-log.txt
+
+      # Passo 15: Encerra o Appium Server
       - name: Stop Appium Server
         run: |
-          kill $APPIUM_PID
-          echo "Appium Server stopped."
+          if [ -f appium_pid.txt ]; then
+            kill $(cat appium_pid.txt) || true
+            echo "Appium Server parado."
+          fi
