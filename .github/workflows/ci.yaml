@@ -19,49 +19,18 @@ jobs:
         with:
           lfs: true  # Habilita o Git LFS para baixar arquivos grandes
 
-      # Passo 2: Configura o Java
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      # Passo 3: Configura o Android SDK
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-
-      # Passo 4: Instala o Appium 2.16.1
-      - name: Install Appium 2.16.1
+      # Passo 2: Copia o snapshot do emulador para o local correto
+      - name: Copy Emulator Snapshot
         run: |
-          npm install -g appium@2.16.1
-          appium -v
+          mkdir -p /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
+          cp src/test/resources/snap_2025-02-21_21-22-59.zip /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
 
-      # Passo 5: Instala o driver UiAutomator2
-      - name: Install UiAutomator2 Driver
-        run: |
-          appium driver install uiautomator2
-          appium driver list --installed
-
-      # Passo 6: Inicia o Appium Server
-      - name: Start Appium Server
-        run: |
-          appium --log-level debug &
-          APPIUM_PID=$!
-          echo "Appium Server started with PID: $APPIUM_PID"
-
-      # Passo 7: Baixa o snapshot do emulador
-      - name: Download Emulator Snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: snap_2025-02-21_21-22-59.zip
-          path: src/test/resources/
-
-      # Passo 8: Extrai o snapshot
+      # Passo 3: Extrai o snapshot
       - name: Extract Emulator Snapshot
         run: |
-          unzip src/test/resources/snap_2025-02-21_21-22-59.zip -d /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
+          unzip /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/snap_2025-02-21_21-22-59.zip -d /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
 
-      # Passo 9: Inicia o emulador Android
+      # Passo 4: Inicia o emulador Android
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -74,6 +43,36 @@ jobs:
             echo "Esperando o emulador inicializar..."
             sleep 30  # Espera 30 segundos para o emulador inicializar
             echo "Emulador iniciado."
+
+      # Passo 5: Configura o Java
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Passo 6: Configura o Android SDK
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+
+      # Passo 7: Instala o Appium 2.16.1
+      - name: Install Appium 2.16.1
+        run: |
+          npm install -g appium@2.16.1
+          appium -v
+
+      # Passo 8: Instala o driver UiAutomator2
+      - name: Install UiAutomator2 Driver
+        run: |
+          appium driver install uiautomator2
+          appium driver list --installed
+
+      # Passo 9: Inicia o Appium Server
+      - name: Start Appium Server
+        run: |
+          appium --log-level debug &
+          APPIUM_PID=$!
+          echo "Appium Server started with PID: $APPIUM_PID"
 
       # Passo 10: Verifica se o emulador está funcionando
       - name: Check Emulator Status
