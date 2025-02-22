@@ -37,6 +37,9 @@ jobs:
           api-level: 30  # Versão do Android
           arch: x86_64  # Arquitetura do emulador
           profile: pixel_xl  # Perfil do dispositivo padrão
+          disable-linux-hw-accel: true
+          emulator-options: "-no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim"
+          script: adb devices  # Garante que o campo não esteja vazio
 
       # Passo 5: Aguarda o emulador inicializar completamente
       - name: Wait for Emulator
@@ -123,4 +126,15 @@ jobs:
           if [ -f appium_pid.txt ]; then
             kill $(cat appium_pid.txt) || true
             echo "Appium Server parado."
+          fi
+
+      # Passo 16: Encerra o Emulador com verificação
+      - name: Stop Emulator
+        if: always()
+        run: |
+          if adb devices | grep -q "emulator-"; then
+            adb -s emulator-5554 emu kill
+            echo "Emulador encerrado."
+          else
+            echo "Nenhum emulador em execução, ignorando."
           fi
