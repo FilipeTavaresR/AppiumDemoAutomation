@@ -1,4 +1,4 @@
-name: Run Android Emulator Tests 
+name: Run Android Emulator Tests
 
 on:
   push:
@@ -34,6 +34,9 @@ jobs:
           appium -v
           appium driver install uiautomator2@2.42.2
           appium --port 4723 &
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Kill existing emulators (if any)
         run: |
