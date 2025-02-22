@@ -15,7 +15,7 @@ public abstract class BaseTest {
     private static final String APP_PATH = Paths.get("src/test/resources/app-debug.apk").toAbsolutePath().toString();
     private static final String DEVICE_NAME = "emulator-5554";
     private static final String PLATFORM_NAME = "Android";
-    private static final String PLATFORM_VERSION = "11";
+    private static final String PLATFORM_VERSION = "10";
     private static final String APP_PACKAGE = "com.saucelabs.mydemoapp.android";
     private static final String APP_ACTIVITY = "com.saucelabs.mydemoapp.android.view.activities.SplashActivity";
     private static final int COMMAND_TIMEOUT = 300;

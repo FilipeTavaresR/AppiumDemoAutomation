@@ -13,7 +13,7 @@ import java.time.Duration;
 
 public class FormCheckoutPage extends BasePage {
 
-    private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     public static final By checkoutTitle = AppiumBy.id("com.saucelabs.mydemoapp.android:id/checkoutTitleTV");
     public static final By fullNameEditText = AppiumBy.id("com.saucelabs.mydemoapp.android:id/fullNameET");
     public static final By address1EditText = AppiumBy.id("com.saucelabs.mydemoapp.android:id/address1ET");

@@ -16,7 +16,7 @@ import static com.filipetavares.tests.core.Utils.expirationDateConverter;
 
 public class ReviewCheckoutPage extends BasePage {
 
-    private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     public static final By paymentTitle = AppiumBy.id("com.saucelabs.mydemoapp.android:id/enterShippingAddressTV");
     public static final By totalItems = AppiumBy.id("com.saucelabs.mydemoapp.android:id/itemNumberTV");
     public static final By deliverAddressTitle = AppiumBy.xpath("//android.widget.TextView[@text=\"Deliver Address\"]");

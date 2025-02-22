@@ -18,7 +18,7 @@ public class LoginPage extends BasePage {
 	public static final By logoutMessage = AppiumBy.androidUIAutomator("new UiSelector().text(\"Are you sure you want to logout\")");
 
 
-	private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+	private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 	private HomePage homePage = new HomePage(driver);
 
 	public LoginPage(AppiumDriver driver) {

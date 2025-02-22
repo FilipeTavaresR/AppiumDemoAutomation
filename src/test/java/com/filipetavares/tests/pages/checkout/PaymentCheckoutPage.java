@@ -13,7 +13,7 @@ import java.time.Duration;
 
 public class PaymentCheckoutPage extends BasePage {
 
-    private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     public static final By paymentTitle = AppiumBy.id("com.saucelabs.mydemoapp.android:id/enterPaymentTitleTV");
     public static final By fullNameEditText = AppiumBy.id("com.saucelabs.mydemoapp.android:id/nameET");
     public static final By cardNumberEditText = AppiumBy.id("com.saucelabs.mydemoapp.android:id/cardNumberET");

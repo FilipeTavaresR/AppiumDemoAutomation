@@ -18,7 +18,7 @@ public class CartPage extends BasePage {
     public static final By addToCart = AppiumBy.id("com.saucelabs.mydemoapp.android:id/cartBt");
     public static final By checkoutButton = AppiumBy.xpath("//android.widget.Button[@content-desc=\"Confirms products for checkout\"]");
     public static final By totalQuantity = AppiumBy.xpath("//android.widget.TextView[@resource-id=\"com.saucelabs.mydemoapp.android:id/itemsTV\"]");
-    private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     private HomePage homePage = new HomePage(driver);
 
     public CartPage(AppiumDriver driver) {

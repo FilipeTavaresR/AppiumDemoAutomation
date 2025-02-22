@@ -11,7 +11,7 @@ import java.time.Duration;
 
 
 public class HomePage extends BasePage {
-	private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+	private final WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
 	public static final By menuButton = AppiumBy.accessibilityId("View menu");
 	public static final By menuLoginButton = AppiumBy.accessibilityId("Login Menu Item");
