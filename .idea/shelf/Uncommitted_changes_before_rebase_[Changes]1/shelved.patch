@@ -1,0 +1,29 @@
+Index: .github/workflows/ci.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>name: CI Appium Tests\r\n\r\non:\r\n  push:\r\n    branches:\r\n      - main\r\n  pull_request:\r\n    branches:\r\n      - main\r\n\r\njobs:\r\n  test:\r\n    runs-on: ubuntu-latest\r\n\r\n    steps:\r\n      - name: Checkout code\r\n        uses: actions/checkout@v4\r\n\r\n      - name: Set up JDK 17\r\n        uses: actions/setup-java@v4\r\n        with:\r\n          java-version: '17'\r\n          distribution: 'temurin'\r\n\r\n      - name: Set up Android SDK\r\n        uses: android-actions/setup-android@v2\r\n\r\n      - name: Start Android Emulator\r\n        uses: reactivecircus/android-emulator-runner@v2\r\n        with:\r\n          api-level: 30\r\n          arch: x86_64\r\n          profile: pixel_xl\r\n          script: |\r\n            adb wait-for-device\r\n            echo \"Aguardando o emulador inicializar completamente...\"\r\n            until adb shell getprop sys.boot_completed | grep -m 1 \"1\"; do\r\n              sleep 5\r\n            done\r\n            echo \"Emulador pronto!\"\r\n\r\n      - name: Check Emulator Status\r\n        run: |\r\n          adb devices\r\n          adb shell getprop sys.boot_completed\r\n\r\n      - name: Install Appium 2.16.1\r\n        run: |\r\n          npm install -g appium@2.16.1\r\n          appium -v\r\n\r\n      - name: Install UiAutomator2 Driver\r\n        run: |\r\n          appium driver install uiautomator2\r\n          appium driver list --installed\r\n\r\n      - name: Start Appium Server\r\n        run: |\r\n          appium --log-level debug &\r\n          echo $! > appium_pid.txt\r\n\r\n      - name: Check Appium Connection\r\n        run: |\r\n          echo \"Verificando conexão do Appium com o emulador...\"\r\n          adb devices | grep emulator || exit 1\r\n\r\n      - name: Install APK\r\n        run: |\r\n          adb install src/test/resources/app-debug.apk\r\n\r\n      - name: Run Appium Tests\r\n        run: mvn test\r\n\r\n      - name: Publish Test Results\r\n        if: always()\r\n        uses: actions/upload-artifact@v4\r\n        with:\r\n          name: test-results\r\n          path: target/surefire-reports\r\n\r\n      - name: Stop Appium Server\r\n        run: |\r\n          kill $(cat appium_pid.txt) || true\r\n          echo \"Appium Server stopped.\"\r\n\r\n      - name: Terminate Emulator\r\n        run: |\r\n          adb -s emulator-5554 emu kill || true\r\n          echo \"Emulador encerrado.\"\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.github/workflows/ci.yaml b/.github/workflows/ci.yaml
+--- a/.github/workflows/ci.yaml	(revision 09d67ca322f5d122ae2f9b53441ff612342cb3fe)
++++ b/.github/workflows/ci.yaml	(date 1740193584940)
+@@ -30,14 +30,12 @@
+         with:
+           api-level: 30
+           arch: x86_64
+-          profile: pixel_xl
++          profile: Nexus 6
+           script: |
+             adb wait-for-device
+-            echo "Aguardando o emulador inicializar completamente..."
+-            until adb shell getprop sys.boot_completed | grep -m 1 "1"; do
+-              sleep 5
+-            done
+-            echo "Emulador pronto!"
++            echo "Aguardando o emulador inicializar..."
++            sleep 60
++            echo "Emulador iniciado."
+ 
+       - name: Check Emulator Status
+         run: |
