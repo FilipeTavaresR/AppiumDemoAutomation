@@ -58,18 +58,26 @@ jobs:
           profile: pixel_xl  # Perfil do dispositivo padrão
           script: |
             adb wait-for-device
+            echo "Esperando o emulador inicializar..."
+            sleep 30  # Espera 30 segundos para o emulador inicializar
             echo "Emulador iniciado."
 
-      # Passo 8: Instala o APK no emulador
+      # Passo 8: Verifica se o emulador está funcionando
+      - name: Check Emulator Status
+        run: |
+          adb devices
+          adb shell getprop sys.boot_completed
+
+      # Passo 9: Instala o APK no emulador
       - name: Install APK
         run: |
           adb install src/test/resources/app-debug.apk
 
-      # Passo 9: Executa os testes Appium
+      # Passo 10: Executa os testes Appium
       - name: Run Appium Tests
         run: mvn test
 
-      # Passo 10: Publica os resultados dos testes (opcional)
+      # Passo 11: Publica os resultados dos testes (opcional)
       - name: Publish Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -77,7 +85,7 @@ jobs:
           name: test-results
           path: target/surefire-reports
 
-      # Passo 11: Encerra o Appium Server
+      # Passo 12: Encerra o Appium Server
       - name: Stop Appium Server
         run: |
           kill $APPIUM_PID
