@@ -44,7 +44,7 @@ jobs:
           cores: 2
           avd-name: test
           force-avd-creation: true
-          emulator-boot-timeout: 1200  # Tempo maior para evitar timeout
+          emulator-boot-timeout: 1800  # Tempo maior para evitar timeout
           emulator-port: 5554
           disable-linux-hw-accel: true
 
