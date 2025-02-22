@@ -53,13 +53,13 @@ jobs:
       - name: Download Emulator Snapshot
         uses: actions/download-artifact@v4
         with:
-          name: meu_snapshot.tar.gz
+          name: snap_2025-02-21_21-22-59.zip  # Nome correto do arquivo
           path: /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
 
       # Passo 8: Extrai o snapshot
       - name: Extract Emulator Snapshot
         run: |
-          tar -xzvf /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/meu_snapshot.tar.gz -C /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
+          unzip /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/snap_2025-02-21_21-22-59.zip -d /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
 
       # Passo 9: Inicia o emulador Android
       - name: Start Android Emulator
@@ -68,7 +68,7 @@ jobs:
           api-level: 30  # Versão do Android
           arch: x86_64  # Arquitetura do emulador
           profile: pixel_xl  # Perfil do dispositivo padrão
-          snapshot: meu_snapshot
+          snapshot: default_boot  # Nome do snapshot (verifique o nome correto no arquivo extraído)
           script: |
             adb wait-for-device
             echo "Esperando o emulador inicializar..."
