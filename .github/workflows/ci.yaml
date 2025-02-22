@@ -10,10 +10,10 @@ on:
       - main
 
 jobs:
-  test:
+  Tests:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Enable KVM
@@ -37,7 +37,7 @@ jobs:
           appium --log-level debug &
           echo $! > appium_pid.txt 
 
-      - name: run tests
+      - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -45,10 +45,7 @@ jobs:
           profile: Nexus 5
           script: |
             echo "Emulador pronto!"
-            mvn test
-
-      - name: Generate Surefire Report
-        run: mvn surefire-report:report
+            mvn clean test surefire-report:report  
 
       - name: Publish Test Results
         if: always()
