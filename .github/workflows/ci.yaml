@@ -16,6 +16,8 @@ jobs:
       # Passo 1: Faz checkout do código
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          lfs: true  # Habilita o Git LFS para baixar arquivos grandes
 
       # Passo 2: Configura o Java
       - name: Set up JDK 17
@@ -47,29 +49,27 @@ jobs:
           APPIUM_PID=$!
           echo "Appium Server started with PID: $APPIUM_PID"
 
-      # Passo 7: Inicia o emulador Android e executa os testes
-      - name: Start Android Emulator and Run Tests
+      # Passo 7: Inicia o emulador Android
+      - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
-          arch: x86_64
-          profile: Nexus 6
+          api-level: 30  # Versão do Android
+          arch: x86_64  # Arquitetura do emulador
+          profile: Pixel_8_Pro_API_30  # Perfil do dispositivo
           script: |
-            # Aguarda o emulador ficar pronto
             adb wait-for-device
-            adb shell input keyevent 82  # Desbloqueia a tela (se necessário)
-            echo "Emulador está pronto."
+            echo "Emulador iniciado."
 
-            # Verifica os dispositivos conectados
-            adb devices
+      # Passo 8: Instala o APK no emulador
+      - name: Install APK
+        run: |
+          adb install src/test/resources/app-debug.apk
 
-            # Instala as dependências do Maven
-            mvn clean install -DskipTests
+      # Passo 9: Executa os testes Appium
+      - name: Run Appium Tests
+        run: mvn test
 
-            # Executa os testes Appium
-            mvn test
-
-      # Passo 8: Publica os resultados dos testes (opcional)
+      # Passo 10: Publica os resultados dos testes (opcional)
       - name: Publish Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -77,7 +77,7 @@ jobs:
           name: test-results
           path: target/surefire-reports
 
-      # Passo 9: Encerra o Appium Server
+      # Passo 11: Encerra o Appium Server
       - name: Stop Appium Server
         run: |
           kill $APPIUM_PID
