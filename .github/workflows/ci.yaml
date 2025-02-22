@@ -53,13 +53,13 @@ jobs:
       - name: Download Emulator Snapshot
         uses: actions/download-artifact@v4
         with:
-          name: snap_2025-02-21_21-22-59.zip  # Nome correto do arquivo
-          path: /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
+          name: snap_2025-02-21_21-22-59.zip
+          path: src/test/resources/
 
       # Passo 8: Extrai o snapshot
       - name: Extract Emulator Snapshot
         run: |
-          unzip /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/snap_2025-02-21_21-22-59.zip -d /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
+          unzip src/test/resources/snap_2025-02-21_21-22-59.zip -d /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
 
       # Passo 9: Inicia o emulador Android
       - name: Start Android Emulator
