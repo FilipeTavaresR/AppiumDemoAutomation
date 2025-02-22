@@ -13,90 +13,64 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Passo 1: Faz checkout do código
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          lfs: true  # Habilita o Git LFS para baixar arquivos grandes
+          lfs: true
 
-      # Passo 2: Configura o Java
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # Passo 3: Configura o Android SDK
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
 
-      # Passo 4: Inicia o emulador Android
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30  # Versão do Android
-          arch: x86_64  # Arquitetura do emulador
-          profile: pixel_xl  # Perfil do dispositivo padrão
-          disable-linux-hw-accel: true
-          emulator-options: "-no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim"
-          script: adb devices  # Garante que o campo não esteja vazio
+          api-level: 30
+          arch: x86_64
+          profile: pixel_xl
+          script: |
+            adb wait-for-device
+            echo "Aguardando o emulador inicializar..."
+            sleep 60
+            echo "Emulador iniciado."
 
-      # Passo 5: Aguarda o emulador inicializar completamente
-      - name: Wait for Emulator
-        run: |
-          echo "Aguardando o emulador inicializar..."
-          until adb shell getprop sys.boot_completed | grep -m 1 '1'; do
-            sleep 5
-          done
-          echo "Emulador iniciado."
-
-      # Passo 6: Verifica se o emulador está funcionando
       - name: Check Emulator Status
         run: |
           adb devices
           adb shell getprop sys.boot_completed
 
-      # Passo 7: Instala o Appium 2.16.1
       - name: Install Appium 2.16.1
         run: |
           npm install -g appium@2.16.1
           appium -v
 
-      # Passo 8: Instala o driver UiAutomator2
       - name: Install UiAutomator2 Driver
         run: |
           appium driver install uiautomator2
           appium driver list --installed
 
-      # Passo 9: Inicia o Appium Server
       - name: Start Appium Server
         run: |
-          appium --log-level debug > appium.log 2>&1 &
+          appium --log-level debug &
           echo $! > appium_pid.txt
-          echo "Appium Server iniciado."
 
-      # Passo 10: Verifica se o Appium está conectado ao emulador
       - name: Check Appium Connection
         run: |
           echo "Verificando conexão do Appium com o emulador..."
-          adb devices | grep emulator
-          if [ $? -eq 0 ]; then
-            echo "Appium conectado ao emulador com sucesso!"
-          else
-            echo "Falha ao conectar Appium ao emulador."
-            exit 1
-          fi
+          adb devices | grep emulator || exit 1
 
-      # Passo 11: Instala o APK no emulador
       - name: Install APK
         run: |
           adb install src/test/resources/app-debug.apk
 
-      # Passo 12: Executa os testes Appium
       - name: Run Appium Tests
         run: mvn test
 
-      # Passo 13: Publica os resultados dos testes
       - name: Publish Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -104,37 +78,12 @@ jobs:
           name: test-results
           path: target/surefire-reports
 
-      # Passo 14: Salva logs do emulador e Appium (para debug)
-      - name: Save Emulator & Appium Logs
-        if: always()
-        run: |
-          adb logcat -d > emulator-log.txt
-          cp appium.log appium-log.txt || true
-
-      - name: Upload Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs
-          path: |
-            emulator-log.txt
-            appium-log.txt
-
-      # Passo 15: Encerra o Appium Server
       - name: Stop Appium Server
         run: |
-          if [ -f appium_pid.txt ]; then
-            kill $(cat appium_pid.txt) || true
-            echo "Appium Server parado."
-          fi
+          kill $(cat appium_pid.txt) || true
+          echo "Appium Server stopped."
 
-      # Passo 16: Encerra o Emulador com verificação
-      - name: Stop Emulator
-        if: always()
+      - name: Terminate Emulator
         run: |
-          if adb devices | grep -q "emulator-"; then
-            adb -s emulator-5554 emu kill
-            echo "Emulador encerrado."
-          else
-            echo "Nenhum emulador em execução, ignorando."
-          fi
+          adb -s emulator-5554 emu kill || true
+          echo "Emulador encerrado."
