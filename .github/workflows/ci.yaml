@@ -42,6 +42,7 @@ jobs:
         with:
           api-level: 29
           arch: x86_64
+          profile: Nexus 5
           script: |
             echo "Emulador pronto!"
             mvn test
