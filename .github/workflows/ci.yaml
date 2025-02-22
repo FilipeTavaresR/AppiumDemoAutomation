@@ -2,13 +2,17 @@ name: Run Android Emulator Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main", "mvn" ]
   pull_request:
 
 jobs:
   android-tests:
-    runs-on: ubuntu-latest
+    runs-on: macos-12
+
+    strategy:
+      matrix:
+        api-level: [29]
+        target: [default]
 
     steps:
       - name: Checkout Repository
@@ -20,8 +24,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '21.7.1'
+
+      - run: |
+          npm install -g appium@2.4.1
+          appium -v
+          appium driver install uiautomator2@2.42.2
+          appium --port 4723 &
 
       - name: Kill existing emulators (if any)
         run: |
@@ -35,16 +47,16 @@ jobs:
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ matrix.api-level }}
           arch: x86_64
           profile: Nexus 6
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          target: default
+          target: ${{ matrix.target }}
           cores: 2
           avd-name: test
           force-avd-creation: true
-          emulator-boot-timeout: 1800  # Tempo maior para evitar timeout
+          emulator-boot-timeout: 1800
           emulator-port: 5554
           disable-linux-hw-accel: true
 
