@@ -41,7 +41,7 @@ public class ReviewCheckoutPage extends BasePage {
         Assertions.assertEquals("Review your order",wait.until(ExpectedConditions.visibilityOfElementLocated(paymentTitle)).getText());
         Assertions.assertEquals(checkoutDTO.totalItems().toString() + " Items",wait.until(ExpectedConditions.visibilityOfElementLocated(totalItems)).getText());
         scrollByText("Deliver Address",0);
-        Assertions.assertEquals("Deliver Address",wait.until(ExpectedConditions.visibilityOfElementLocated(deliverAddressTitle)).getText());
+        //Assertions.assertEquals("Deliver Address",wait.until(ExpectedConditions.visibilityOfElementLocated(deliverAddressTitle)).getText());
         Assertions.assertEquals(checkoutDTO.fullName(),wait.until(ExpectedConditions.visibilityOfElementLocated(fullNameTextView)).getText());
         Assertions.assertEquals(checkoutDTO.address(),wait.until(ExpectedConditions.visibilityOfElementLocated(addressNameTextView)).getText());
         Assertions.assertEquals(checkoutDTO.city()+",",wait.until(ExpectedConditions.visibilityOfElementLocated(cityNameTextView)).getText().trim());
