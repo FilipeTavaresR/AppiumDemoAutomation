@@ -117,6 +117,7 @@ Os relatórios de execução são gerados automaticamente utilizando o Surefire 
 Você pode baixar os reports gerados diretamente na aba Actions e clicando na última execução de testes.
 
 (Testes que foram executados de forma local)
+
 ![img.png](img.png)
 
 ## 🤝 Contribuições 
