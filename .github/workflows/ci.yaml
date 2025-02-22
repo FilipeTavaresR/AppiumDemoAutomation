@@ -49,35 +49,48 @@ jobs:
           APPIUM_PID=$!
           echo "Appium Server started with PID: $APPIUM_PID"
 
-      # Passo 7: Inicia o emulador Android
+      # Passo 7: Baixa o snapshot do emulador
+      - name: Download Emulator Snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: meu_snapshot.tar.gz
+          path: /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
+
+      # Passo 8: Extrai o snapshot
+      - name: Extract Emulator Snapshot
+        run: |
+          tar -xzvf /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/meu_snapshot.tar.gz -C /home/runner/.android/avd/Pixel_8_Pro_API_30.avd/snapshots/
+
+      # Passo 9: Inicia o emulador Android
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30  # Versão do Android
           arch: x86_64  # Arquitetura do emulador
           profile: pixel_xl  # Perfil do dispositivo padrão
+          snapshot: meu_snapshot
           script: |
             adb wait-for-device
             echo "Esperando o emulador inicializar..."
             sleep 30  # Espera 30 segundos para o emulador inicializar
             echo "Emulador iniciado."
 
-      # Passo 8: Verifica se o emulador está funcionando
+      # Passo 10: Verifica se o emulador está funcionando
       - name: Check Emulator Status
         run: |
           adb devices
           adb shell getprop sys.boot_completed
 
-      # Passo 9: Instala o APK no emulador
+      # Passo 11: Instala o APK no emulador
       - name: Install APK
         run: |
           adb install src/test/resources/app-debug.apk
 
-      # Passo 10: Executa os testes Appium
+      # Passo 12: Executa os testes Appium
       - name: Run Appium Tests
         run: mvn test
 
-      # Passo 11: Publica os resultados dos testes (opcional)
+      # Passo 13: Publica os resultados dos testes (opcional)
       - name: Publish Test Results
         if: always()
         uses: actions/upload-artifact@v4
@@ -85,7 +98,7 @@ jobs:
           name: test-results
           path: target/surefire-reports
 
-      # Passo 12: Encerra o Appium Server
+      # Passo 14: Encerra o Appium Server
       - name: Stop Appium Server
         run: |
           kill $APPIUM_PID
