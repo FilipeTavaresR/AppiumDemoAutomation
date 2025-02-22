@@ -38,13 +38,16 @@ jobs:
           arch: x86_64
           profile: Nexus 6
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: |
-            adb wait-for-device
-            echo "Aguardando o emulador inicializar completamente..."
-            until adb shell getprop sys.boot_completed | grep -m 1 "1"; do
-              sleep 5
-            done
-            echo "Emulador pronto!"
+          disable-animations: true
+
+      - name: Wait for Emulator to Boot
+        run: |
+          adb wait-for-device
+          echo "Aguardando o emulador inicializar completamente..."
+          while [[ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]]; do
+            sleep 5
+          done
+          echo "Emulador pronto!"
 
       - name: Check Emulator Status
         run: |
