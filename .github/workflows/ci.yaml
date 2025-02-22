@@ -33,9 +33,11 @@ jobs:
           profile: pixel_xl
           script: |
             adb wait-for-device
-            echo "Aguardando o emulador inicializar..."
-            sleep 60
-            echo "Emulador iniciado."
+            echo "Aguardando o emulador inicializar completamente..."
+            until adb shell getprop sys.boot_completed | grep -m 1 "1"; do
+              sleep 5
+            done
+            echo "Emulador pronto!"
 
       - name: Check Emulator Status
         run: |
